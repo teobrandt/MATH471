@@ -1,0 +1,15 @@
+TACC: Starting up job 6191832
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+ Error:  0.642806709071214     
+          50          50
+ Error:  0.540725172386515     
+          50          50
+ Error:  0.645718841692552     
+          50          50
+ Error:  0.543662655365565     
+          50          50
+ time   1.04074811935425     
+ time   1.04074811935425     
+slurmstepd: *** JOB 6191832 CANCELLED AT 2015-12-10T00:49:26 *** on c557-504
+[c557-504.stampede.tacc.utexas.edu:mpirun_rsh][signal_processor] Caught signal 15, killing job

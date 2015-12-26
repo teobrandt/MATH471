@@ -1,0 +1,1 @@
+To run the program, simply navigate to Homework3/Code and enter the command "perl approx_error.p". This may take a minute to complete, but when it concludes a png file named "ErrorPlot.png" will be created with the plots of the errors for both the Trapezoidal Rule and Gauss Quadrature for both Pi and Pi^2 and the file is saved in the Report directory.

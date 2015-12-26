@@ -1,0 +1,14 @@
+TACC: Starting up job 6191824
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][spawn_processes] Failed to execvp() './homework7.x': No such file or directory (2)
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][spawn_processes] Failed to execvp() './homework7.x': No such file or directory (2)
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][spawn_processes] Failed to execvp() './homework7.x': No such file or directory (2)
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][spawn_processes] Failed to execvp() './homework7.x': No such file or directory (2)
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][child_handler] MPI process (rank: 0, pid: 95324) exited with status 1
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][child_handler] MPI process (rank: 1, pid: 95325) exited with status 1
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][child_handler] MPI process (rank: 2, pid: 95326) exited with status 1
+[c557-504.stampede.tacc.utexas.edu:mpispawn_0][child_handler] MPI process (rank: 3, pid: 95327) exited with status 1
+TACC: MPI job exited with code: 1
+ 
+TACC: Shutdown complete. Exiting.

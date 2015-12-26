@@ -1,0 +1,2 @@
+matlab -nosplash -nodesktop -r "run('HW5angrybirds_Runge.m'); exit"
+gnome-open angrybirds.avi

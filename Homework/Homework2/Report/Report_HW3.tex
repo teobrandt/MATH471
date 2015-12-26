@@ -1,0 +1,85 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{graphicx} % Package for including figures
+%\usepackage{psfrag,color}
+
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lema}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corrolary}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{conj}{Conjecture}[section]
+\newtheorem{exmp}{Example}[section]
+
+
+\title{Report: Homework 3 Math/CS 471}
+\author{Teo Brandt and Brennan Collins}
+\date{\today}   % Activate to display a given date or no date
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report will explore two methods of approximating the following integral
+\[
+I=\int_{-1}^{1}e^{cos(kx)}dx,
+\]
+for \(k=pi\text{ or }pi^{2}\). The first method is known as the trapezoidal rule and the second as Gauss quadrature.
+\end{abstract}
+
+\section{Trapezoidal Rule}
+The trapezoidal rule is given by the following expression
+\[
+\int_{X_{L}}^{X_R}f(x)dx\approx h\bigg(\frac{f(x_{0})+f(x_{n})}{2}+\sum_{i=1}^{n-1}f(x_{i})\bigg)
+\]
+where the grid is given by \(x_{i}=X_{L}+ih\text{, }i=0,...,n\text{, }h=\frac{X_{R}-X_{L}}{n}\).
+\section{Gauss Quadrature}
+\cite{HW}In Gauss quadrature the location of the grid-points and weights, \(\omega_{i}\), are chosen so that the order of the approximation to the weighted integral
+\[
+\int_{-1}^{1}f(z)w(z)dz\approx \sum_{i=0}^{n}\omega_{i}f(z_{i}),
+\]
+is maximized. (The function \(w(z)\) is positive and integrable. In this report we will only consider the case when \(w(z)=1\) in order to simplify things.
+
+
+
+\section{Methods}
+Here is how the programs were executed...
+\section{Results}
+\begin{figure}[h]
+\caption{Plot of error against \textbf{n}}
+\centering
+\includegraphics
+{error_plot}
+\end{figure}
+\\
+In the figure shown above, different rates of convergence are observed for each of the methods and for each of the values of \(k\). The trapezoidal method where \(k=\pi^{2}\) is the only case in which the order of the method may be read from the slope of its plot. This slope is \(\approx -3\) which is consistent with the theory as shown for
+\newpage
+\section{Appendix}
+\indent In order to compile and execute the code for this assignment perl is used. The directory in which the code can be found is:
+\\
+\begin{center}
+\textit{~/Homework/Homework2/Code/}
+\end{center}
+\\
+Once in this directory the following command will compile and execute the code:
+\\
+\begin{center}
+\textit{\$ perl newtonS.p}
+\end{center}
+\\
+
+\newpage
+\begin{thebibliography}{9}
+\bibitem{HW} 
+Daniel Appelo
+\textit{Homework 3}. 
+referenced Sep. 26, 2015
+
+\end{thebibliography}
+
+\end{document} 

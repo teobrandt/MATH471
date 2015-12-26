@@ -1,0 +1,128 @@
+program hwk6
+  use xycoord ! use the module xycoord to set the mapping 
+  !$ use omp_lib
+  implicit none
+  integer :: nr,ns,i,j
+  real(kind = 8) :: hr,hs
+  real(kind = 8), dimension(:), allocatable :: r,s
+  real(kind = 8), dimension(:,:), allocatable :: u,uex_x,uex_y,ur,us,xcr,xcs,ycr,ycs,sx,rx,sy,ry,ux,uy
+  
+  real(kind = 8), dimension(:,:), allocatable :: xc,yc
+  real ( kind = 8 ) wtime1,wtime2,wtime,fstart,fend,ostart,oend
+  !$ call OMP_set_num_threads(20)
+  ! Numbermm of grid points for the cartesian grid
+  nr = 20
+  ns = 20
+  call cpu_time(fstart)
+  ! Allocate memory for the various arrays
+  allocate(r(0:nr),s(0:ns),u(0:nr,0:ns),ur(0:nr,0:ns),us(0:nr,0:ns))
+  allocate(xcr(0:nr,0:ns),ycr(0:nr,0:ns),xcs(0:nr,0:ns),ycs(0:nr,0:ns))
+  allocate(uex_x(0:nr,0:ns),uex_y(0:nr,0:ns))
+  allocate(xc(0:nr,0:ns),yc(0:nr,0:ns),sx(0:nr,0:ns),sy(0:nr,0:ns))
+  allocate(rx(0:nr,0:ns),ry(0:nr,0:ns),ux(0:nr,0:ns),uy(0:nr,0:ns))
+  !$ wtime1 = omp_get_wtime()
+  hr = 2.d0/dble(nr)
+  hs = 2.d0/dble(ns)
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,nr
+     r(i) = -1.d0 + dble(i)*hr
+  end do
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,ns
+     s(i) = -1.d0 + dble(i)*hs
+  end do
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(j)
+  do j = 0,ns
+     !$OMP PARALLEL DO PRIVATE(i)
+     do i = 0,nr
+        xc(i,j) = x_coord(r(i),s(j))
+        yc(i,j) = y_coord(r(i),s(j))
+     end do
+     !$OMP END PARALLEL DO
+  end do
+  !$OMP END PARALLEL DO
+  call  printdble2d(xc,nr,ns,'x.txt')
+  call  printdble2d(yc,nr,ns,'y.txt')
+  !$OMP PARALLEL DO PRIVATE(j)
+  do j = 0,ns
+     !$OMP PARALLEL DO PRIVATE(i)
+     do i = 0,nr
+        u(i,j) = xc(i,j)**2 + yc(i,j)**2
+        !exact form of u partial solved analytically
+        uex_x(i,j) = 2.d0*xc(i,j)
+        uex_y(i,j) = 2.d0*yc(i,j)
+     end do
+     !$OMP END PARALLEL DO
+  end do
+  !$OMP END PARALLEL DO
+  ! Differentiate in the r-direction
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,ns
+     call differentiate(u(0:nr,i),ur(0:nr,i),hr,nr)
+  end do
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,ns
+     call differentiate(xc(0:nr,i),xcr(0:nr,i),hr,nr)
+  end do
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,ns
+     call differentiate(yc(0:nr,i),ycr(0:nr,i),hr,nr)
+  end do
+  !$OMP END PARALLEL DO
+
+  ! Differentiate in the s-direction
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,nr
+     call differentiate(u(i,0:ns),us(i,0:ns),hs,ns)
+  end do
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,nr
+     call differentiate(xc(i,0:ns),xcs(i,0:ns),hs,ns)
+  end do
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,nr
+     call differentiate(yc(i,0:ns),ycs(i,0:ns),hs,ns)
+  end do
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(i)
+  do i = 0,nr
+     !$OMP PARALLEL DO PRIVATE(j)
+     do j = 0,ns
+        sx(i,j) = -ycr(i,j)/(xcr(i,j)*ycs(i,j)-xcs(i,j)*ycr(i,j))
+        rx(i,j) = ycs(i,j)/(xcr(i,j)*ycs(i,j)-xcs(i,j)*ycr(i,j))
+        sy(i,j) = xcr(i,j)/(xcr(i,j)*ycs(i,j)-xcs(i,j)*ycr(i,j))
+        ry(i,j) = -xcs(i,j)/(xcr(i,j)*ycs(i,j)-xcs(i,j)*ycr(i,j))
+        !Finally!!!!!, numerical approx of ux and uy
+        ux(i,j) = rx(i,j)*ur(i,j)+sx(i,j)*us(i,j)
+        uy(i,j) = ry(i,j)*ur(i,j)*sy(i,j)*us(i,j)
+     end do
+     !$OMP END PARALLEL DO
+  end do
+  !$OMP END PARALLEL DO
+  !analytically solved form of sx,rx,sy,ry for viewing pleasure only
+  !sx = -yr/(xr*ys-xs*yr)
+  !rx = ys/(xr*ys-xs*yr)
+  !sy = xr/(xr*ys-xs*yr)
+  !ry = -xs/(xr*ys-xs*yr)
+
+!end program hwk6
+
+!Trapazoidal approximation used to approximate the value of du/dx and du/dy
+!recall, x goes from -1 to 1 and y goes from -1 to 1
+
+!First Trap: int((ux+uy-(uex_x+uex_y)^2)^(1/2)dx) from x(0,0) to x(nr,ns) and y(0,0) to y(nr,ns)
+!note: the trap approx will be done on the r and s directions
+
+!step one: hold s and approx through r using sum_{j}(w_{j}e2(r_{j},s_{i}) as approximate
+  !$ wtime2 = omp_get_wtime()
+  call cpu_time(fend)
+  !$ write(*,*) 'OpenMP Walltime elapsed: ', wtime2 - wtime1
+
+  !write (*,*) 'Fortran CPU time elapsed: ',fend-fstart
+end program hwk6
